@@ -84,8 +84,8 @@ func TestEmptyInstallationReconfiguresWhenScriptsAdded(t *testing.T) {
 			if reg.SchemaVersion != pluginabi.SchemaVersion {
 				t.Fatal("script payload compatibility changed")
 			}
-			if reg.Capabilities.RequestInterceptor != step.want || reg.Capabilities.ResponseInterceptor != step.want || reg.Capabilities.StreamChunkInterceptor != step.want {
-				t.Fatalf("capabilities = %+v; want all %v", reg.Capabilities, step.want)
+			if !reg.Capabilities.RequestInterceptor || reg.Capabilities.ResponseInterceptor != step.want || reg.Capabilities.StreamChunkInterceptor != step.want {
+				t.Fatalf("capabilities = %+v; want request=true, response/stream=%v", reg.Capabilities, step.want)
 			}
 		})
 	}

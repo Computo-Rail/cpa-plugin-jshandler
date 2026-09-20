@@ -254,7 +254,8 @@ func handleJSHandlerRegister(request []byte) ([]byte, error) {
 	jsHandlerABIState.shuttingDown = false
 	jsHandlerABIState.Unlock()
 	// A no-op interceptor still makes the host clone and serialize every stream
-	// payload before crossing the ABI. Do not subscribe an empty installation.
+	// payload before crossing the ABI. Do not subscribe an empty installation to
+	// response hooks. Keep request hooks because hosts reject zero capabilities.
 	// Keep explicit paths subscribed even when temporarily missing, preserving
 	// the existing file-repair/hot-reload behavior.
 	hasScripts := len(p.cfg.ScriptPaths) > 0 || len(builtinScriptPaths(p.pluginDir)) > 0
@@ -262,7 +263,7 @@ func handleJSHandlerRegister(request []byte) ([]byte, error) {
 		SchemaVersion: pluginabi.SchemaVersion,
 		Metadata:      plugin.Metadata,
 		Capabilities: abiCapabilities{
-			RequestInterceptor:     hasScripts && plugin.Capabilities.RequestInterceptor != nil,
+			RequestInterceptor:     plugin.Capabilities.RequestInterceptor != nil,
 			ResponseInterceptor:    hasScripts && plugin.Capabilities.ResponseInterceptor != nil,
 			StreamChunkInterceptor: hasScripts && plugin.Capabilities.StreamChunkInterceptor != nil,
 		},
